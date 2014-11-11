@@ -1,7 +1,6 @@
 package palantir
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -27,35 +26,13 @@ func createTestMessage(title, content string) *Message {
 	return msg
 }
 
-func marshalTestMessage(title, content string, t *testing.T) string {
-	msg := createTestMessage(title, content)
-
-	m, err := json.Marshal(msg)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return string(m)
-}
-
-func marshalTestTicket(value string, t *testing.T) string {
-	ticket := Ticket{value}
-
-	r, err := json.Marshal(ticket)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return string(r)
-}
-
 func TestGetMessage(t *testing.T) {
 	tests := []struct {
 		code       int
 		body       string
 		hasMessage bool
 	}{
-		{200, marshalTestMessage("", "", t), true},
+		{200, string(createTestMessage("", "").MustMarshal()), true},
 		{400, "", false},
 		{500, "", false},
 	}
@@ -82,7 +59,7 @@ func TestCreateMessage(t *testing.T) {
 		msg       *Message
 		isSuccess bool
 	}{
-		{201, marshalTestTicket("", t), tm, true},
+		{201, string(Ticket{""}.MustMarshal()), tm, true},
 		{400, "", tm, false},
 		{500, "", tm, false},
 	}

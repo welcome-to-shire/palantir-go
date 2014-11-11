@@ -3,7 +3,6 @@ package palantir
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -55,10 +54,7 @@ func (c Client) GetMessage(subject string) (*Message, error) {
 }
 
 func (c Client) CreateMessage(subject string, message Message) (*Ticket, error) {
-	payload, err := json.Marshal(message)
-	if err != nil {
-		return nil, err
-	}
+	payload := message.MustMarshal()
 	req, err := http.NewRequest("POST", c.fullUrl(subject), bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
